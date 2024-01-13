@@ -26,3 +26,14 @@ export const login=async(req,res)=>{
     
       sendToken(user, 200, res);
 }
+
+export const logout=(req,res)=>{
+    const options={
+        expires:new Date(Date.now()),
+        httpOnly:true
+    }
+    res.status(200).cookie("token",null,options).json({
+        success:true,
+        message:"Logged Out"
+    })
+}
