@@ -3,6 +3,7 @@ import validator from 'validator';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import twilio from 'twilio';
 const userSchema=new mongoose.Schema({
     username:{
         type:String,
@@ -22,17 +23,31 @@ const userSchema=new mongoose.Schema({
         minlength: [8, "Password should be greater than 8 characters"],
         select: false,
     },
+    mobileNumber: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return /^[0-9]{10}$/.test(value);
+        },
+        message: 'Mobile number must be a 10-digit number.',
+      },
+    },
     role: {
         type: String,
         enum: ['admin', 'user', 'employee'],
         default: 'user'
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-      },
+    gender:{
+      type:String,
+      enum:['Male','Female'],
+    },
+    dob:{
+      type:Date,
+      default:Date.now,
+    },
     resetPasswordToken: String,
   resetPasswordExpire: Date,
+
 })
 
 userSchema.pre("save", async function (next) {
@@ -52,15 +67,16 @@ userSchema.pre("save", async function (next) {
     return await bcrypt.compare(password, this.password);
   };
 
-//   userSchema.methods.getResetPasswordToken = function () {
-//     const resetToken = crypto.randomBytes(20).toString("hex");
-//     this.resetPasswordToken = crypto
-//       .createHash("sha256")
-//       .update(resetToken)
-//       .digest("hex");
+  userSchema.methods.getResetPasswordToken = function () {
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    this.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
   
-//     this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+    this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
   
-//     return resetToken;
-//   };
+    return resetToken;
+  };
+ 
 export const User=mongoose.model("users",userSchema);

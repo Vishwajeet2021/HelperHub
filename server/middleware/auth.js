@@ -1,7 +1,7 @@
-import { User } from "../models/user";
+import { User } from "../models/user.js";
 import jwt from 'jsonwebtoken';
-import ErrorHandler from "../Utility/ErrorHandler";
-export const isAuthenticated=async()=>{
+import ErrorHandler from "../Utility/ErrorHandler.js";
+export const isAuthenticated=async(req,res,next)=>{
     const { token } = req.cookies;
 
     if (!token) {
@@ -13,4 +13,12 @@ export const isAuthenticated=async()=>{
     req.user = await User.findById(decodedData.id);
   
     next();
+}
+export const isAuthorized=(roles)=>{
+    return (req,res,next)=>{
+        if(!roles.includes(req.user.role)){
+        return next(new ErrorHandler(`Role:${req.user.role} is not allowed to access this resource`,403))
+    }
+    next();
+}
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   TextField,
   Button,
@@ -17,34 +18,53 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-//import { FacebookLogin } from "facebook-login-react";
 
 const Register = () => {
-  const [username, setUsername] = useState('');
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: 'user',
+    dob: '',
+    gender: 'Male',
+    mobileNumber: '',
+  });
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
+  const handleFormChange = async(e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
   const [hover, setOnhover] = useState(false);
 
+  const handleRegistration = async (e) => {
+    e.preventDefault();
 
-
-  const handleRegistration = () => {
-    console.log('Register with:',username, email, password);
+    try {
+      const { data } = await axios.post('http://localhost:4000/api/v1/register', form);
+      console.log(data);
+    } catch (error) {
+      console.error(error.response.data.message);
+    }
   };
-  const hoverEffect=()=>{
-    setOnhover(true);
-  }
-  const discardHoverEffect=()=>{
-    setOnhover(false);
-  }
-  const textStyle={
-    fontWeight:'900',
-    color:hover?'#f57c00':'#ffa726',
-    transition:'all 0.5s ease-in-out'
 
-  }
-  
+  const hoverEffect = () => {
+    setOnhover(true);
+  };
+
+  const discardHoverEffect = () => {
+    setOnhover(false);
+  };
+
+  const textStyle = {
+    fontWeight: '900',
+    color: hover ? '#f57c00' : '#ffa726',
+    transition: 'all 0.5s ease-in-out',
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -55,13 +75,13 @@ const Register = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: 'rgb(255, 251, 245)', 
+          backgroundColor: 'rgb(255, 251, 245)',
         }}
       >
         <Avatar
           sx={{
             margin: 1,
-            backgroundColor: (theme) => theme.palette.warning.main, 
+            backgroundColor: (theme) => theme.palette.warning.main,
           }}
         >
           <LockOutlinedIcon />
@@ -82,8 +102,9 @@ const Register = () => {
             fullWidth
             label="Username"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            name="username"
+            value={form.username}
+            onChange={handleFormChange}
             required
           />
           <TextField
@@ -92,8 +113,9 @@ const Register = () => {
             fullWidth
             label="Email Address"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={form.email}
+            onChange={handleFormChange}
             required
           />
           <TextField
@@ -102,11 +124,12 @@ const Register = () => {
             fullWidth
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={form.password}
+            onChange={handleFormChange}
             required
           />
-           <FormControl
+          <FormControl
             component="fieldset"
             sx={{
               marginTop: 2,
@@ -117,65 +140,100 @@ const Register = () => {
               row
               aria-label="role"
               name="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+              value={form.role}
+              onChange={handleFormChange}
             >
+            </RadioGroup>
+          </FormControl>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label="Date of Birth"
+            type="date"
+            name="dob"
+            value={form.dob}
+            onChange={handleFormChange}
+            required
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label="Mobile Number"
+            type="text"
+            name="mobileNumber"
+            value={form.mobileNumber}
+            onChange={handleFormChange}
+            required
+          />
+          <FormControl
+            component="fieldset"
+            sx={{
+              marginTop: 2,
+            }}
+          >
+            <FormLabel component="legend">Gender</FormLabel>
+            <RadioGroup
+              row
+              aria-label="gender"
+              name="gender"
+              value={form.gender}
+              onChange={handleFormChange}
+            >
+              <FormControlLabel value="Male" control={<Radio />} label="Male" />
               <FormControlLabel
-                value="admin"
+                value="Female"
                 control={<Radio />}
-                label="Admin"
-              />
-              <FormControlLabel
-                value="user"
-                control={<Radio />}
-                label="User"
-              />
-              <FormControlLabel
-                value="employee"
-                control={<Radio />}
-                label="Employee"
+                label="Female"
               />
             </RadioGroup>
           </FormControl>
+
           <Button
             fullWidth
             variant="contained"
             color="warning"
-            type='submit'
+            type="submit"
             sx={{
               marginY: 3,
               backgroundColor: (theme) => theme.palette.warning.main,
-              transition:'all 0.5s ease-in-out'
+              transition: 'all 0.5s ease-in-out',
             }}
-            
           >
             Sign In
           </Button>
-          <Typography sx={{textAlign:'center'}} variant='h4'>Or</Typography>
-          <Typography sx={{paddingY:2,textAlign:'center',fontWeight:600}}>Already have an account? &nbsp;&nbsp;<Link to={'/login'} style={textStyle} onMouseOver={hoverEffect} onMouseOut={discardHoverEffect}>Log In</Link></Typography>
+          <Typography sx={{ textAlign: 'center' }} variant="h4">
+            Or
+          </Typography>
+          <Typography
+            sx={{ paddingY: 2, textAlign: 'center', fontWeight: 600 }}
+          >
+            Already have an account? &nbsp;&nbsp;
+            <Link
+              to={'/login'}
+              style={textStyle}
+              onMouseOver={hoverEffect}
+              onMouseOut={discardHoverEffect}
+            >
+              Log In
+            </Link>
+          </Typography>
         </form>
         <Divider sx={{ width: '100%', marginY: 2 }} />
-        <GoogleOAuthProvider clientId="205218426151-3fvtvvkqptugarltigmm7igvvqpbstq5.apps.googleusercontent.com">
-        <GoogleLogin
-            onSuccess={credentialResponse => {
-                console.log(credentialResponse);
+        <GoogleOAuthProvider clientId="your-google-client-id">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              console.log(credentialResponse);
             }}
             onError={() => {
-                console.log('Login Failed');
+              console.log('Login Failed');
             }}
-            />;
+          />
+          ;
         </GoogleOAuthProvider>
-        {/* <FacebookLogin
-            appId="1670370456820938"
-            autoLoad={true}
-            fields="name,email,picture"
-            callback={responseFacebook}
-            cssClass="my-facebook-button-class"
-            icon="fa-facebook"
-        /> */}
       </Paper>
     </Container>
-    
   );
 };
 

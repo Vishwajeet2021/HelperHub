@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   TextField,
   Button,
@@ -14,12 +15,27 @@ import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+  const handleFormChange = async(e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
   const [hover,setOnhover]=useState(false);
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Logging in with:', email, password);
+  const handleLogin = async(e) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.post('http://localhost:4000/api/v1/login', form);
+      console.log(data);
+    } catch (error) {
+      console.error(error.response.data.message);
+    }
   };
   const hoverEffect=()=>{
     setOnhover(true);
@@ -69,8 +85,8 @@ const Login = () => {
             fullWidth
             label="Email Address"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={handleFormChange}
             required
           />
           <TextField
@@ -79,8 +95,8 @@ const Login = () => {
             fullWidth
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={form.password}
+            onChange={handleFormChange}
             required
           />
           <Button
