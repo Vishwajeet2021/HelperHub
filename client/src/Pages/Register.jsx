@@ -24,7 +24,7 @@ const Register = () => {
     username: '',
     email: '',
     password: '',
-    role: 'user',
+    role: 'User',
     dob: '',
     gender: 'Male',
     mobileNumber: '',
@@ -143,6 +143,9 @@ const Register = () => {
               value={form.role}
               onChange={handleFormChange}
             >
+              <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
+              <FormControlLabel value="User" control={<Radio />} label="User"/>
+              <FormControlLabel value="Employee" control={<Radio />} label="Employee" />
             </RadioGroup>
           </FormControl>
           <TextField
