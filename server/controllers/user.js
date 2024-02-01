@@ -11,7 +11,17 @@ export const register=catchAsyncErrors(async(req,res,next)=>{
     const user=await User.create({username,email,password,mobileNumber,dob,gender});
     sendToken(user, 201, res);
 })
-
+export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
+    try {
+        const user = req.user;
+        res.status(200).json({
+          success: true,
+          user,
+        });
+      } catch (error) {
+        next(error);
+      }
+  })
 export const login=catchAsyncErrors(async(req,res,next)=>{
     const {email,password}=req.body;
     if (!email || !password) {

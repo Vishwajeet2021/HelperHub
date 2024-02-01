@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import axios from 'axios';
 import {
   TextField,
@@ -18,8 +20,11 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { Context } from '../index';
 
 const Register = () => {
+  const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
+
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -41,13 +46,21 @@ const Register = () => {
   const [hover, setOnhover] = useState(false);
 
   const handleRegistration = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
     try {
       const { data } = await axios.post('http://localhost:4000/api/v1/register', form);
       console.log(data);
+      const auth_token=data.token;
+      document.cookie = `authToken=${auth_token}; secure; SameSite=None; path=/`;
+      setIsAuthenticated(true);
+      setLoading(false);
     } catch (error) {
-      console.error(error.response.data.message);
+      console.error(error);
+      setIsAuthenticated(false);
+      setLoading(false);
+
     }
   };
 
@@ -64,7 +77,7 @@ const Register = () => {
     color: hover ? '#f57c00' : '#ffa726',
     transition: 'all 0.5s ease-in-out',
   };
-
+ if(isAuthenticated) return <Navigate to={"/"} />
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -203,6 +216,7 @@ const Register = () => {
               backgroundColor: (theme) => theme.palette.warning.main,
               transition: 'all 0.5s ease-in-out',
             }}
+            disabled={loading}
           >
             Sign In
           </Button>

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import axios from 'axios';
 import {
   TextField,
@@ -13,8 +15,11 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { Context } from '../index';
 
 const Login = () => {
+  const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
+
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -27,14 +32,22 @@ const Login = () => {
     }));
   };
   const [hover,setOnhover]=useState(false);
+
   const handleLogin = async(e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const { data } = await axios.post('http://localhost:4000/api/v1/login', form);
       console.log(data);
+      const auth_token=data.token;
+      document.cookie = `authToken=${auth_token}; secure; SameSite=None; path=/`;
+      setIsAuthenticated(true);
+      setLoading(false);
+
     } catch (error) {
       console.error(error.response.data.message);
+      setIsAuthenticated(false);
+      setLoading(false);
     }
   };
   const hoverEffect=()=>{
@@ -48,6 +61,8 @@ const Login = () => {
     color:hover?'#f57c00':'#ffa726',
     transition:'all 0.5s ease-in-out'
   }
+ if(isAuthenticated) return <Navigate to={"/"} />
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -85,6 +100,7 @@ const Login = () => {
             fullWidth
             label="Email Address"
             type="email"
+            name="email"
             value={form.email}
             onChange={handleFormChange}
             required
@@ -95,6 +111,7 @@ const Login = () => {
             fullWidth
             label="Password"
             type="password"
+            name="password"
             value={form.password}
             onChange={handleFormChange}
             required
@@ -109,6 +126,7 @@ const Login = () => {
               transition:'all 0.5s ease-in-out'
             }}
             type='submit'
+            disabled={loading}
           >
             Continue
           </Button>

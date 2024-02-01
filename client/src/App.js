@@ -1,24 +1,60 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from './Pages/Login';
-import Header from './Components/Header';
 import Register from './Pages/Register';
 import ResetPassword from './Pages/ResetPassword';
 import Home from './Pages/Home';
 import PaymentPage from './Pages/PaymentPage';
-
+import Navbar from './Components/Navbar';
+import Footer from './Components/Footer';
+import About from './Pages/About';
+import ContactUs from './Pages/ContactUs';
+import Profile from './Pages/Profile';
+import ServicesPage from './Pages/Services/Services';
+import Cleaning from './Pages/Services/Cleaning';
+import { useContext, useEffect } from 'react';
+import { Context } from './index';
+import axios from 'axios';
 function App() {
+  const {setUser,setIsAuthenticated,setLoading}=useContext(Context)
+  useEffect(()=>{
+    setLoading(true)
+    axios.get('http://localhost:4000/api/v1/userDetails').then(res=>{
+      if (res.success) {
+        setUser(res.user);
+        console.log(res.user)
+        setIsAuthenticated(true);
+        setLoading(false);
+      } else {
+        setUser({});
+        setIsAuthenticated(false);
+        setLoading(false);
+      }
+    }).catch((error)=>{
+      setUser({});
+      setIsAuthenticated(false);
+      setLoading(false);
+
+    })
+  },[setIsAuthenticated,setLoading,setUser])
   return (
     <div className="App">
       <BrowserRouter>
-      <Header/>
+      <Navbar/>
         <Routes>
+          <Route path='/' element={<Home/>} />
+          <Route path='/home' element={<Home/>} />
           <Route path='/login' element={<Login/>} />
           <Route path='/register' element={<Register/>} />
           <Route path="/api/v1/password/reset/:token" element={<ResetPassword />} />
-          <Route path='/' element={<Home/>} />
           <Route path="/paymentsuccess" element={<PaymentPage/>} />
+          <Route path='/about' element={<About/>}/>
+          <Route path='/contact' element={<ContactUs/>}/>           
+          <Route path='/profile' element={<Profile/>}/>
+          <Route path="/services/services" element={<ServicesPage/>}/>
+          <Route path="/services/services/cleaning" element={<Cleaning/>}/>          
         </Routes>
+        <Footer/>
       </BrowserRouter>
     </div>
   );

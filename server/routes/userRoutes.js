@@ -1,8 +1,9 @@
 import express from 'express';
-import { deleteUser, forgotPassword, getAllUsers, getSingleUser, isAuthorized, login, logout, register, resetNewPassword, updatePassword, updateProfile, updateUserRole } from '../controllers/user.js';
+import { deleteUser, forgotPassword, getAllUsers, getSingleUser, getUserDetails, isAuthorized, login, logout, register, resetNewPassword, updatePassword, updateProfile, updateUserRole } from '../controllers/user.js';
 import { isAuthenticated } from '../middleware/auth.js';
 const router=express.Router();
 router.route("/register").post(register);
+router.route('/userDetails').get( isAuthenticated,getUserDetails);
 router.route("/login").post(login);
 router.route("/password/forgot").post(forgotPassword);
 
