@@ -15,27 +15,23 @@ import Cleaning from './Pages/Services/Cleaning';
 import { useContext, useEffect } from 'react';
 import { Context } from './index';
 import axios from 'axios';
+import {Toaster} from 'react-hot-toast'
 function App() {
   const {setUser,setIsAuthenticated,setLoading}=useContext(Context)
   useEffect(()=>{
-    setLoading(true)
-    axios.get('http://localhost:4000/api/v1/userDetails').then(res=>{
-      if (res.success) {
-        setUser(res.user);
-        console.log(res.user)
-        setIsAuthenticated(true);
-        setLoading(false);
-      } else {
-        setUser({});
-        setIsAuthenticated(false);
-        setLoading(false);
-      }
-    }).catch((error)=>{
-      setUser({});
-      setIsAuthenticated(false);
+    setLoading(true);
+    axios.get('http://localhost:4000/api/v1/userDetails',{withCredentials:true}).then(res=>{
+      setUser(res.data.user);
+      console.log(res.data.user)
+      setIsAuthenticated(true);
       setLoading(false);
-
-    })
+  }).catch((error)=>{
+    console.log(error)
+    setUser({});
+    setIsAuthenticated(false);
+    setLoading(false);
+  })
+    
   },[setIsAuthenticated,setLoading,setUser])
   return (
     <div className="App">
@@ -55,6 +51,7 @@ function App() {
           <Route path="/services/services/cleaning" element={<Cleaning/>}/>          
         </Routes>
         <Footer/>
+        <Toaster/>
       </BrowserRouter>
     </div>
   );

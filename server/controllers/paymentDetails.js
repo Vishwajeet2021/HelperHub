@@ -13,7 +13,7 @@ export const paymentDetails=async(req,res,next)=>{
         cvv,
     
       };
-    
+    try{
       const debitInfo = await bankDetails.findOneAndUpdate({user:req.user.id}, debitCardDetails, {
         new: true,
         upsert:true,
@@ -30,4 +30,16 @@ export const paymentDetails=async(req,res,next)=>{
         message:"Account Information Updated Successfully...",
 
       });
+    } catch (error) {
+      // Check if the error is a Mongoose validation error
+      if (error.name === "ValidationError") {
+        const validationErrors = Object.values(error.errors).map(
+          (err) => err.message
+        );
+        return next(new ErrorHandler(validationErrors.join(", "), 400));
+      } else {
+        // For other types of errors, pass them to the error handling middleware
+        return next(error);
+      }
+    }
 }

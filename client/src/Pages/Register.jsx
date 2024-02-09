@@ -21,6 +21,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { Context } from '../index';
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
@@ -50,14 +51,20 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post('http://localhost:4000/api/v1/register', form);
+      const { data } = await axios.post('http://localhost:4000/api/v1/register', form,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       console.log(data);
-      const auth_token=data.token;
-      document.cookie = `authToken=${auth_token}; secure; SameSite=None; path=/`;
+      toast.success("You have registered successfully...");
       setIsAuthenticated(true);
       setLoading(false);
     } catch (error) {
       console.error(error);
+      toast.error(error.response.data.message);
       setIsAuthenticated(false);
       setLoading(false);
 

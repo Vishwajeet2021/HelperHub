@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import {
   Container,
@@ -14,41 +14,66 @@ import EmailIcon from '@mui/icons-material/Email';
 import WebIcon from '@mui/icons-material/Web';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import  Mapimage from '../Images/MAP.png'
+import { Context } from '../index';
 
 const ContactUs = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const { loading, setLoading, user } = useContext(Context);
+
+  const [contactInfo, setContactInfo] = useState({
+    username: user.username || '',
+    email:user.email || '',
+    mobileNumber:user.mobileNumber || '',
+    message:'',
+  });
+  const handleContactInfoChange = (event) => {
+    setContactInfo({
+      ...contactInfo,
+      [event.target.name]: event.target.value,
+    });
   };
-  const [email,setEmail]=useState('');
-  useEffect(()=>{
-     async function settingExistingEmail(){
-       const {data}=axios.post('http://localhost:4000/api/v1/register');
-       console.log(data)
-       setEmail(data.email)
-     }
-     settingExistingEmail();
-  },[])
+  
+const submitHandler = async (event) => {
+  event.preventDefault();
+  setLoading(true);
+  try {
+    const response = await axios.post(
+      'http://localhost:4000/api/v1/contact',  
+      contactInfo
+    );
+    console.log(response.data); 
+  setLoading(false);
+    
+  } catch (error) {
+    console.log(error.response.data); 
+    setLoading(false);
+ }
+};
+  
   return (
     <Container maxWidth="lg" style={{ marginTop: '1%', marginBottom: '1%' }}>
       <Grid container spacing={3}>
         {/* Left Section */}
         <Grid item xs={12} sm={6}>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={submitHandler}>
             <Typography variant="h5" style={{ fontWeight: 'bolder' }} gutterBottom>
               Contact Information
             </Typography>
-            <TextField label="Full Name" fullWidth margin="normal" required />
-            <TextField label="Email" fullWidth margin="normal" value={email}/>
-            <TextField label="Contact" fullWidth margin="normal" required />
+            <TextField label="Full Name" fullWidth margin="normal" required name='username' value={contactInfo.username} onChange={handleContactInfoChange}/>
+            <TextField label="Email" fullWidth margin="normal" name='email' value={contactInfo.email} onChange={handleContactInfoChange}/>
+            <TextField label="Contact" fullWidth margin="normal" name='mobileNumber' required value={contactInfo.mobileNumber} onChange={handleContactInfoChange} />
             <TextField
               label="Message"
               multiline
               rows={4}
               fullWidth
               margin="normal"
+              name="message"
               required
+              value={contactInfo.message}
+              onChange={handleContactInfoChange}
+              
             />
-            <Button type="submit" variant="contained" color="primary" style={{ color: '#fff', marginTop: '1rem' }}>
+            <Button type="submit" variant="contained" disabled={loading} color="primary" style={{ color: '#fff', marginTop: '1rem' }}>
               Submit
             </Button>
           </form>

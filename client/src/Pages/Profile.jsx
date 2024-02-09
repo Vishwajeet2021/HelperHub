@@ -1,31 +1,39 @@
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { TextField, Button, Grid, Box, Container as MuiContainer } from '@mui/material';
 import { Context } from '../index';
 import Loader from '../Components/Loader';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function Profile() {
-  const {isAuthenticated,loading,user}=useContext(Context);
-  console.log(user)
+  const { isAuthenticated, loading, user } = useContext(Context);
+
+  // State for user details
   const [basicInfo, setBasicInfo] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    dob: '',
-    gender: '',
+    username: user.username || '',
+    email: user.email || '',
+    mobileNumber: user.mobileNumber || '',
+    dob: user.dob || '',
+    gender: user.gender || '',
   });
+
+  // State for password
   const [password, setPassword] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
+
+  // State for payment info
   const [paymentInfo, setPaymentInfo] = useState({
-    nameOnCard: '',
+    cardName: '',
     cardNumber: '',
     expiryDate: '',
     cvv: '',
   });
 
+  // Handle changes in user details form
   const handleBasicInfoChange = (event) => {
     setBasicInfo({
       ...basicInfo,
@@ -33,6 +41,7 @@ function Profile() {
     });
   };
 
+  // Handle changes in password form
   const handlePasswordChange = (event) => {
     setPassword({
       ...password,
@@ -40,57 +49,106 @@ function Profile() {
     });
   };
 
-  const handlePaymentInfoChange = (event) => {
+  // Handle changes in payment info form
+  const handleCardUpdation = (event) => {
     setPaymentInfo({
       ...paymentInfo,
       [event.target.name]: event.target.value,
     });
   };
 
-  const handleSubmit = (event) => {
+  // Handle submission of user details form
+  const handleUpdation = async (event) => {
     event.preventDefault();
-    console.log('Basic Information:', basicInfo);
-    console.log('Password:', password);
-    console.log('Payment Information:', paymentInfo);
+    try {
+      const response = await axios.put(
+        'http://localhost:4000/api/v1/me/update',
+        {
+          username: basicInfo.username,
+          email: basicInfo.email,
+          mobileNumber: basicInfo.mobileNumber,
+          dob: basicInfo.dob,
+          gender: basicInfo.gender
+        },
+        { withCredentials: true }
+      );
+      console.log('User Details Updated:', response.data);
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error('Error updating user details:', error);
+      toast.error(error.response.data.message);
+
+    }
   };
-  if (!isAuthenticated) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',  
-          justifyContent: 'center', 
-          height: '100vh',  
-        }}
-      >
-        <h1 style={{ width: '100%', textAlign: 'center' }}>
-          Login first to access this page
-        </h1>
-        <Link to="/login">
-          <button style={{ display: 'inline-block',color:'white',border:'none',backgroundColor:'tomato',padding:'0.5rem 1rem',margin:'1rem 0',fontWeight:'' }}>Log In</button>
-        </Link>
-      </div>
-    );
+
+
+  const handlePasswordUpdation = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios.put(
+        'http://localhost:4000/api/v1/password/update',
+        { 
+          oldPassword:password.oldPassword,
+          newPassword:password.newPassword,
+          confirmPassword:password.confirmPassword
+        },
+        { withCredentials: true }
+      );
+      console.log('Password Updated:', response.data);
+      toast.success(response.data.message);
+
+    } catch (error) {
+      console.error('Error updating password:', error);
+      toast.error(error.response.data.message);
+
+    }
+  };
+  const handlePaymentInfoUpdation=async(event)=>{
+    event.preventDefault();
+    try {
+      const response = await axios.put(
+        'http://localhost:4000/api/v1/paymentDetailsInfo',
+        { 
+          cardName:paymentInfo.cardName,
+          cardNumber:paymentInfo.cardNumber,
+          expiryDate:paymentInfo.expiryDate,
+          cvv:paymentInfo.cvv
+        },
+        { withCredentials: true }
+      );
+      console.log('Payment Info Updated:', response.data);
+      toast.success(response.data.message);
+
+    } catch (error) {
+      console.error('Error while updating payment details:', error);
+      toast.error(error.response.data.message);
+    }
+
   }
-  
   return (
-    loading?<Loader/>:(
-    <MuiContainer maxWidth="lg">
-      <form onSubmit={handleSubmit} style={{ padding: '0 16px' }}>
-        <Grid container spacing={2} justifyContent="center">
-          {/* Basic Information */}
-          <Grid item xs={12} sm={6} mt={2}>
-            <Box fontWeight="bold" fontSize={20} textAlign="center">
-              Basic Information:
-            </Box>
-            <TextField
+    loading ? <Loader /> : (
+      <MuiContainer maxWidth="lg">
+        {!isAuthenticated ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+            <h1 style={{ width: '100%', textAlign: 'center' }}>Login first to access this page</h1>
+            <Link to="/login">
+              <button style={{ display: 'inline-block', color: 'white', border: 'none', backgroundColor: 'tomato', padding: '0.5rem 1rem', margin: '1rem 0', fontWeight: '' }}>Log In</button>
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <div style={{display:'flex'}}>
+            <form onSubmit={handleUpdation} style={{ padding: '0 16px', marginBottom: '20px' }}>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={12} sm={6} mt={2}>
+                  <Box fontWeight="bold" fontSize={20} textAlign="center">Basic Information:</Box>
+                  <TextField
               fullWidth
               size="small"
               sx={{ mb: 1 }}
               label="Name"
-              name="name"
-              value={basicInfo.name}
+              name="username"
+              value={basicInfo.username}
               onChange={handleBasicInfoChange}
             />
             <TextField
@@ -107,9 +165,10 @@ function Profile() {
               size="small"
               sx={{ mb: 1 }}
               label="Mobile"
-              name="mobile"
-              value={basicInfo.mobile}
+              name="mobileNumber"
+              value={basicInfo.mobileNumber}
               onChange={handleBasicInfoChange}
+              
             />
             <TextField
               fullWidth
@@ -129,14 +188,20 @@ function Profile() {
               value={basicInfo.gender}
               onChange={handleBasicInfoChange}
             />
-          </Grid>
-
-          {/* Change Password */}
-          <Grid item xs={12} sm={6} mt={2}>
-            <Box fontWeight="bold" fontSize={20} textAlign="center">
-              Change Password:
-            </Box>
-            <TextField
+            <Box textAlign="center" mt={2} mb={4}>
+          <Button type="submit" variant="contained" color="primary" onClick={handleUpdation}>
+            Save
+          </Button>
+        </Box>
+                </Grid>
+              </Grid>
+              
+            </form>
+            <form onSubmit={handlePasswordUpdation} style={{ padding: '0 16px', marginBottom: '20px' }}>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={12} sm={6} mt={2}>
+                  <Box fontWeight="bold" fontSize={20} textAlign="center">Change Password:</Box>
+                  <TextField
               fullWidth
               size="small"
               sx={{ mb: 1 }}
@@ -166,11 +231,17 @@ function Profile() {
               value={password.confirmPassword}
               onChange={handlePasswordChange}
             />
-          </Grid>
-        </Grid>
-
-        {/* Payment Information */}
-        <Grid container spacing={2} justifyContent="center">
+             <Box textAlign="center" mt={2} mb={4}>
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
+        </Box>
+                </Grid>
+              </Grid>
+            </form>
+            </div>
+            <form onSubmit={handleCardUpdation} style={{ padding: '0 16px' }}>
+            <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sm={6}>
             <Box fontWeight="bold" fontSize={20} textAlign="center">
               Payment Information:
@@ -183,9 +254,9 @@ function Profile() {
               size="small"
               sx={{ mb: 1 }}
               label="Name on card"
-              name="nameOnCard"
-              value={paymentInfo.nameOnCard}
-              onChange={handlePaymentInfoChange}
+              name="cardName"
+              value={paymentInfo.cardName}
+              onChange={handleCardUpdation}
             />
             <TextField
               fullWidth
@@ -194,7 +265,7 @@ function Profile() {
               label="Card number"
               name="cardNumber"
               value={paymentInfo.cardNumber}
-              onChange={handlePaymentInfoChange}
+              onChange={handleCardUpdation}
             />
             <TextField
               fullWidth
@@ -203,7 +274,7 @@ function Profile() {
               label="Expiry Date"
               name="expiryDate"
               value={paymentInfo.expiryDate}
-              onChange={handlePaymentInfoChange}
+              onChange={handleCardUpdation}
             />
             <TextField
               fullWidth
@@ -212,18 +283,22 @@ function Profile() {
               label="CVV"
               name="cvv"
               value={paymentInfo.cvv}
-              onChange={handlePaymentInfoChange}
+              onChange={handleCardUpdation}
             />
           </Grid>
         </Grid>
         <Box textAlign="center" mt={2} mb={4}>
-          <Button type="submit" variant="contained" color="primary">
+          <Button type="submit" variant="contained" color="primary" onClick={handlePaymentInfoUpdation}>
             Save
           </Button>
         </Box>
-      </form>
-    </MuiContainer>
-  ))
-  
+              
+            </form>
+          </div>
+        )}
+      </MuiContainer>
+    )
+  );
 }
+
 export default Profile;

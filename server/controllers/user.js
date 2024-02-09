@@ -64,7 +64,7 @@ export const forgotPassword=async(req,res,next)=>{
     }
     const newPasswordToken=user.getResetPasswordToken();
     await user.save({validateBeforeSave:false});
-    const newPasswordUrl=`${req.protocol}://${req.get("host")}/api/v1/password/reset/${newPasswordToken}`
+    const newPasswordUrl=`${req.protocol}://localhost:3001/api/v1/password/reset/${newPasswordToken}`
     const newPasswordMessage=`Hi ${user.username}, \n Kindly, reset your password from the below link \n\n ${newPasswordUrl} \n\n `
     try {
         const emailOptions={email:user.email,subject:"Recover your password for HelperHub",message:newPasswordMessage}
@@ -135,9 +135,10 @@ export const updatePassword = catchAsyncErrors(async(req, res, next) => {
     sendToken(user, 200, res);
   })
 export const updateProfile=catchAsyncErrors(async(req,res)=>{
-    const {name,mobileNumber,dob,gender}=req.body;
+    const {username,email,mobileNumber,dob,gender}=req.body;
     const newUserData = {
-        name,
+        username,
+        email,
         mobileNumber,
         dob,
         gender

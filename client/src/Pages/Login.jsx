@@ -16,6 +16,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { Context } from '../index';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
@@ -37,19 +38,37 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.post('http://localhost:4000/api/v1/login', form);
+      const { data } = await axios.post('http://localhost:4000/api/v1/login', form,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       console.log(data);
-      const auth_token=data.token;
-      document.cookie = `authToken=${auth_token}; secure; SameSite=None; path=/`;
+      toast.success("Logged in successfully...");
       setIsAuthenticated(true);
       setLoading(false);
 
     } catch (error) {
-      console.error(error.response.data.message);
+      console.log(error)
+      toast.error(error.response.data.message);
       setIsAuthenticated(false);
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:4000/api/v1/password/forgot', { email: form.email });
+      toast.success("The link to reset your password has been sent to your email. Please check your inbox.");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   const hoverEffect=()=>{
     setOnhover(true);
   }
@@ -130,6 +149,10 @@ const Login = () => {
           >
             Continue
           </Button>
+          <Typography variant="body2">
+          <Button onClick={handleForgotPassword}>Forgot Password?</Button>
+        </Typography>
+        <Divider sx={{ width: '100%', marginY: 2 }} />
           <Typography sx={{textAlign:'center'}} variant='h4'>Or</Typography>
           <Typography sx={{paddingY:2,textAlign:'center',fontWeight:600}}>New user? &nbsp;&nbsp;<Link to={'/register'} style={textStyle} onMouseOver={hoverEffect} onMouseOut={discardHoverEffect}>Register here</Link></Typography>
         </form>

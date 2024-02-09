@@ -3,18 +3,49 @@ import { Container } from '@mui/system';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom';
-
+import React, { useContext, useState } from 'react'
+import { Navigate, useParams } from 'react-router-dom';
+import { Context } from '../index';
+import axios from 'axios'
+import toast from 'react-hot-toast';
 const ResetPassword = () => {
   const {token}=useParams();
-  const [oldPassword,setOldPassword]=useState('');
+  // const [oldPassword,setOldPassword]=useState('');
   const [newPassword,setNewPassword]=useState('');
   const [confirmPassword,setConfirmPassword]=useState('');
-  const handleResetPassword=(e)=>{
-    console.log(token)
-}
+  const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
+  const handleResetPassword=async(e)=>{
+  
 
+    console.log(token);
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { data } = await axios.put(`http://localhost:4000/api/v1/password/reset/${token}`,
+      {
+        newPassword,
+        confirmPassword
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      console.log(data);
+      toast.success("You have registered successfully...");
+      setIsAuthenticated(true);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response.data.message);
+      setIsAuthenticated(false);
+      setLoading(false);
+
+    }
+}
+ if(isAuthenticated) return <Navigate to={"/"} />
+  
   return (
     <Container component="main" maxWidth="xs">
     <CssBaseline />
@@ -46,7 +77,7 @@ const ResetPassword = () => {
         }}
         onSubmit={handleResetPassword}
       >
-        <TextField
+        {/* <TextField
           variant="outlined"
           margin="normal"
           fullWidth
@@ -55,13 +86,14 @@ const ResetPassword = () => {
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
           required
-        />
+        /> */}
         <TextField
           variant="outlined"
           margin="normal"
           fullWidth
           label="New Password"
           type="password"
+          name="newPassword"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           required
@@ -72,7 +104,8 @@ const ResetPassword = () => {
           fullWidth
           label="Confirm Password"
           type="password"
-          value={confirmPassword}
+          name="confirmPassword"
+            value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
@@ -86,6 +119,7 @@ const ResetPassword = () => {
             transition:'all 0.5s ease-in-out'
           }}
           type='submit'
+          disabled={loading}
         >
           Submit
         </Button>
