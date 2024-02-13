@@ -16,6 +16,9 @@ import { useContext, useEffect } from 'react';
 import { Context } from './index';
 import axios from 'axios';
 import {Toaster} from 'react-hot-toast'
+import CitySelection from './Components/PricingMap/CitySelection';
+import ServiceSelection from './Components/PricingMap/Serviceselection';
+import BookingDetails from './Components/PricingMap/DetailsRegardingBooking';
 function App() {
   const {setUser,setIsAuthenticated,setLoading}=useContext(Context)
   useEffect(()=>{
@@ -49,6 +52,9 @@ function App() {
           <Route path='/profile' element={<Profile/>}/>
           <Route path="/services/services" element={<ServicesPage/>}/>
           <Route path="/services/services/cleaning" element={<Cleaning/>}/>          
+          <Route path="/SelectLocation" element={<CitySelection/>}/>          
+          <Route path="/ServiceSelection" element={<ServiceSelection/>}/>          
+          <Route path="/booking-details" element={<BookingDetails/>}/>          
         </Routes>
         <Footer/>
         <Toaster/>

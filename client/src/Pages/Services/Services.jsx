@@ -1,6 +1,9 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const ServicesCard = ({ title, imageUrl }) => {
   const cardStyles = {
@@ -47,15 +50,20 @@ const ServicesCard = ({ title, imageUrl }) => {
     backgroundColor: 'black', // Background color of the button
     color: '#fff', // Text color of the button
   };
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
+  const handleBookNowClick = () => {
+    // Navigate to CitySelection when the "Book Now" button is clicked
+    navigate('/SelectLocation');
+  };
   return (
     <Paper style={cardStyles}>
-      <img src={imageUrl} alt="" style={imageStyles} />
-      <div style={titleStyles}>{title}</div>
-      <Button variant="contained" style={buttonStyles}>
-        Book Now
-      </Button>
-    </Paper>
+    <img src={imageUrl} alt="" style={imageStyles} />
+    <div style={titleStyles}>{title}</div>
+    <Button variant="contained" style={buttonStyles} onClick={handleBookNowClick}>
+      Book Now
+    </Button>
+  </Paper>
   );
 };
 
