@@ -7,8 +7,8 @@ import crypto from 'crypto';
 
 //twilio code=5DSAF9AC56M8LW6VCXM5VLZT
 export const register=catchAsyncErrors(async(req,res,next)=>{
-    const {username,email,password,mobileNumber,dob,gender}=req.body;
-    const user=await User.create({username,email,password,mobileNumber,dob,gender});
+    const {username,email,password,mobileNumber,role,dob,gender}=req.body;
+    const user=await User.create({username,email,password,mobileNumber,role,dob,gender});
     sendToken(user, 201, res);
 })
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
@@ -169,10 +169,9 @@ export const getAllUsers=catchAsyncErrors(async(req,res)=>{
 })
 export const getSingleUser=catchAsyncErrors(async(req,res)=>{
     const user = await User.findById(req.params.id);
-
     if (!user) {
     return next(
-      new ErrorHandler(`User does not exist with Id: ${req.params.id}`)
+      new ErrorHandler(`User does not exist with Id: ${req.params.id}`,404)
     );
   }
 
@@ -206,7 +205,7 @@ export const deleteUser=catchAsyncErrors(async(req,res)=>{
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 400)
     );
   }
-  await user.remove();
+  await user.deleteOne({_id:req.params.id});
 
   res.status(200).json({
     success: true,

@@ -45,7 +45,6 @@ function Navbar() {
       setLoading(false);
     }
   };
-
   return (
     <>
       <AppBar position="static" sx={{ backgroundColor: "black" }}>
@@ -64,9 +63,6 @@ function Navbar() {
             </Button>
             <Button color="inherit" onClick={handleServicesMenuOpen}>
               Services
-            </Button>
-            <Button color="inherit" onClick={() => history("/Account")}>
-              Pricing
             </Button>
             <Button color="inherit" onClick={() => history("/About")}>
               About Us
@@ -104,26 +100,22 @@ function Navbar() {
           },
         }}
       >
-        <MenuItem onClick={() => navigateTo("/Services/Services")}>
+        <MenuItem onClick={() => navigateTo("/Services/All services")}>
           Services(All)
         </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Services/Cleaning")}>
-          House Maid
-        </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Submenu2")}>
+        
+        <MenuItem onClick={() => navigateTo("/Services/Cooking")}>
           Cooking Maid
         </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Submenu2")}>
+        
+        <MenuItem onClick={() => navigateTo("/Services/Nurse")}>
+          Medical Care
+        </MenuItem>
+        <MenuItem onClick={() => navigateTo("/Services/Nanny")}>
           Nanny
         </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Submenu2")}>
-          3 In 1
-        </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Submenu2")}>
-          2 In 1
-        </MenuItem>
-        <MenuItem onClick={() => navigateTo("/Services/Submenu2")}>
-          Nurse/Doctor
+        <MenuItem onClick={() => navigateTo("/Services/Cleaning")}>
+          House Maid
         </MenuItem>
       </Menu>
     </>

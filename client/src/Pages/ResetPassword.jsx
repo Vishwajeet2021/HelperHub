@@ -77,16 +77,7 @@ const ResetPassword = () => {
         }}
         onSubmit={handleResetPassword}
       >
-        {/* <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          label="Old Password"
-          type="password"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          required
-        /> */}
+        
         <TextField
           variant="outlined"
           margin="normal"

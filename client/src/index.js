@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import {createContext} from 'react';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
 export const Context=createContext({isAuthenticated:false});
 const AppWrapper=()=>{
   const [isAuthenticated,setIsAuthenticated]=useState(false);
@@ -18,7 +20,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
+    <Provider store={store}>
     <AppWrapper/>
+    </Provider>
   </React.StrictMode>
 );
 

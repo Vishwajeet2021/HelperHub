@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TextField, Button, Grid, Box, Container as MuiContainer } from '@mui/material';
 import { Context } from '../index';
 import Loader from '../Components/Loader';
@@ -8,8 +8,7 @@ import toast from 'react-hot-toast';
 
 function Profile() {
   const { isAuthenticated, loading, user } = useContext(Context);
-
-  // State for user details
+  
   const [basicInfo, setBasicInfo] = useState({
     username: user.username || '',
     email: user.email || '',
@@ -18,14 +17,12 @@ function Profile() {
     gender: user.gender || '',
   });
 
-  // State for password
   const [password, setPassword] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
 
-  // State for payment info
   const [paymentInfo, setPaymentInfo] = useState({
     cardName: '',
     cardNumber: '',
@@ -33,7 +30,6 @@ function Profile() {
     cvv: '',
   });
 
-  // Handle changes in user details form
   const handleBasicInfoChange = (event) => {
     setBasicInfo({
       ...basicInfo,
@@ -41,7 +37,7 @@ function Profile() {
     });
   };
 
-  // Handle changes in password form
+
   const handlePasswordChange = (event) => {
     setPassword({
       ...password,
@@ -49,7 +45,7 @@ function Profile() {
     });
   };
 
-  // Handle changes in payment info form
+  
   const handleCardUpdation = (event) => {
     setPaymentInfo({
       ...paymentInfo,
@@ -57,7 +53,7 @@ function Profile() {
     });
   };
 
-  // Handle submission of user details form
+
   const handleUpdation = async (event) => {
     event.preventDefault();
     try {
@@ -103,29 +99,25 @@ function Profile() {
 
     }
   };
-  const handlePaymentInfoUpdation=async(event)=>{
-    event.preventDefault();
-    try {
-      const response = await axios.put(
-        'http://localhost:4000/api/v1/paymentDetailsInfo',
-        { 
-          cardName:paymentInfo.cardName,
-          cardNumber:paymentInfo.cardNumber,
-          expiryDate:paymentInfo.expiryDate,
-          cvv:paymentInfo.cvv
-        },
-        { withCredentials: true }
-      );
-      console.log('Payment Info Updated:', response.data);
-      toast.success(response.data.message);
-
-    } catch (error) {
-      console.error('Error while updating payment details:', error);
-      toast.error(error.response.data.message);
-    }
-
+  useEffect(() => {
+  const storedPaymentInfo = localStorage.getItem('paymentInfo');
+  if (storedPaymentInfo) {
+    setPaymentInfo(JSON.parse(storedPaymentInfo));
   }
-  return (
+}, []);
+
+const handlePaymentInfoUpdation = async (event) => {
+  event.preventDefault();
+  try {
+    localStorage.setItem('paymentInfo', JSON.stringify(paymentInfo));
+    toast.success("Payment information saved in your device");
+
+  } catch (error) {
+    console.error('Error while saving payment info to local storage:', error);
+    toast.error("Failed to save payment information in your device.");
+  }
+};
+   return (
     loading ? <Loader /> : (
       <MuiContainer maxWidth="lg">
         {!isAuthenticated ? (
@@ -136,7 +128,7 @@ function Profile() {
             </Link>
           </div>
         ) : (
-          <div>
+            <>
             <div style={{display:'flex'}}>
             <form onSubmit={handleUpdation} style={{ padding: '0 16px', marginBottom: '20px' }}>
               <Grid container spacing={2} justifyContent="center">
@@ -176,7 +168,7 @@ function Profile() {
               sx={{ mb: 1 }}
               label="Date of birth"
               name="dob"
-              value={basicInfo.dob}
+              value={basicInfo.dob.substring(0,10)}
               onChange={handleBasicInfoChange}
             />
             <TextField
@@ -262,6 +254,7 @@ function Profile() {
               fullWidth
               size="small"
               sx={{ mb: 1 }}
+              type="number"
               label="Card number"
               name="cardNumber"
               value={paymentInfo.cardNumber}
@@ -294,7 +287,7 @@ function Profile() {
         </Box>
               
             </form>
-          </div>
+        </>
         )}
       </MuiContainer>
     )

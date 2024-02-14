@@ -1,3 +1,4 @@
+
 import React, { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -6,20 +7,16 @@ import {
   TextField,
   Button,
   Container,
-  Paper,
   Typography,
-  Avatar,
-  CssBaseline,
-  Divider,
+  Grid,Box
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from 'react-router-dom';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { Context } from '../index';
 import toast from 'react-hot-toast';
+import SignInImage from '../Images/LoginImg.png';
 
-const Login = () => {
-  const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
+const SignInForm = () => {
+    const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
 
   const [form, setForm] = useState({
     email: '',
@@ -81,96 +78,79 @@ const Login = () => {
     transition:'all 0.5s ease-in-out'
   }
  if(isAuthenticated) return <Navigate to={"/"} />
-
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Paper
-        elevation={3}
+    <Container component="main" maxWidth="lg" sx={{ width: '80%' }}>
+      <Box
         sx={{
-          padding: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: 'rgb(255, 251, 245)', 
+          justifyContent: 'center',
+          backgroundColor: '#F7EFE5',
+          borderRadius: '2px',
+          margin: '1rem',
+          padding: '1rem',
         }}
       >
-        <Avatar
-          sx={{
-            margin: 1,
-            backgroundColor: (theme) => theme.palette.warning.main, 
-          }}
-        >
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Welcome back
-        </Typography>
-        <form
-          sx={{
-            width: '100%',
-            marginTop: 3,
-          }}
-          onSubmit={handleLogin}
-        >
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Email Address"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleFormChange}
-            required
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleFormChange}
-            required
-          />
-          <Button
-            fullWidth
-            variant="contained"
-            color="warning"
-            sx={{
-              marginY: 3,
-              backgroundColor: (theme) => theme.palette.warning.main, 
-              transition:'all 0.5s ease-in-out'
-            }}
-            type='submit'
-            disabled={loading}
-          >
-            Continue
-          </Button>
-          <Typography variant="body2">
-          <Button onClick={handleForgotPassword}>Forgot Password?</Button>
-        </Typography>
-        <Divider sx={{ width: '100%', marginY: 2 }} />
-          <Typography sx={{textAlign:'center'}} variant='h4'>Or</Typography>
-          <Typography sx={{paddingY:2,textAlign:'center',fontWeight:600}}>New user? &nbsp;&nbsp;<Link to={'/register'} style={textStyle} onMouseOver={hoverEffect} onMouseOut={discardHoverEffect}>Register here</Link></Typography>
-        </form>
-        <Divider sx={{ width: '100%', marginY: 2 }} />
+        <Grid container spacing={2}>
 
-        <GoogleOAuthProvider clientId="205218426151-3fvtvvkqptugarltigmm7igvvqpbstq5.apps.googleusercontent.com">
-        <GoogleLogin
-            onSuccess={credentialResponse => {
-                console.log(credentialResponse);
-            }}
-            onError={() => {
-                console.log('Login Failed');
-            }}
-            />;
-        </GoogleOAuthProvider>
-      </Paper>
+          <Grid item xs={8}>
+            <img
+              src={SignInImage}
+              alt="House hold"
+              style={{ width: '100%', height: '100%', objectFit:'contain', borderRadius: '4px' }}
+            />
+          </Grid>
+
+          <Grid item xs={4}>
+            <Box sx={{ p: 1, width: '100%', height: 'auto', display: 'flex', flexDirection: 'column' }}>
+              <Typography component="h1" variant="h5" fontWeight="bold" sx={{ marginBottom: 2 }}>
+                Sign In
+              </Typography>
+              <form onSubmit={handleLogin}>
+                <TextField
+                  fullWidth
+                  type="email"
+                  label="Email Address"
+                  name="email"
+                  required
+                  variant="outlined"
+                  value={form.email}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <TextField
+                  fullWidth
+                  type="password"
+                  label="Password"
+                  name="password"
+                  required
+                  variant="outlined"
+                  value={form.password}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <Button type="submit" disabled={loading} fullWidth variant="contained" color="primary" sx={{ marginBottom: 1.5 }}>
+                  Sign In
+                </Button>
+                <Typography variant="h6" align="center" margin={1}>
+                 
+                    <Button onClick={handleForgotPassword}>Forgot Your Password?</Button>
+
+                </Typography>
+              </form>
+              <Typography variant="body2" align="center" margin={1}>
+                Don't have an account?{' '}
+                <Link to={'/register'} style={textStyle} onMouseOver={hoverEffect} onMouseOut={discardHoverEffect}>
+                  Sign Up
+                </Link>
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     </Container>
   );
 };
 
-export default Login;
+export default SignInForm;

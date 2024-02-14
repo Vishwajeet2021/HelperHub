@@ -15,6 +15,7 @@ import WebIcon from '@mui/icons-material/Web';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import  Mapimage from '../Images/MAP.png'
 import { Context } from '../index';
+import toast from 'react-hot-toast';
 
 const ContactUs = () => {
   const { loading, setLoading, user } = useContext(Context);
@@ -42,10 +43,11 @@ const submitHandler = async (event) => {
     );
     console.log(response.data); 
   setLoading(false);
-    
+    toast.success(response.data.message);
   } catch (error) {
     console.log(error.response.data); 
     setLoading(false);
+    toast.error(error.response.data.message);
  }
 };
   

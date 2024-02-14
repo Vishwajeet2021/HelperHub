@@ -1,7 +1,7 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Login from './Pages/Login';
-import Register from './Pages/Register';
+// import Login from './Pages/Login';
+// import Register from './Pages/Register';
 import ResetPassword from './Pages/ResetPassword';
 import Home from './Pages/Home';
 import PaymentPage from './Pages/PaymentPage';
@@ -11,11 +11,22 @@ import About from './Pages/About';
 import ContactUs from './Pages/ContactUs';
 import Profile from './Pages/Profile';
 import ServicesPage from './Pages/Services/Services';
-import Cleaning from './Pages/Services/Cleaning';
+// import Cleaning from './Pages/Services/Cleaning';
 import { useContext, useEffect } from 'react';
 import { Context } from './index';
 import axios from 'axios';
 import {Toaster} from 'react-hot-toast'
+import MemberShipDetails from './Pages/PricingMap/MembershipDetails';
+import CitySelection from './Pages/PricingMap/CitySelection';
+import WorkShiftAndDate from './Pages/PricingMap/WorkShiftAndDate';
+import RegistrationForm from './Pages/Register';
+import SignInForm from './Pages/Login';
+import ServicesDescription from './Pages/Services/ServicesDescription'
+import ServiceSelection from './Pages/PricingMap/Serviceselection';
+import DetailsRegardingBooking from './Pages/PricingMap/DetailsRegardingBooking'
+import Admin from './Pages/Admin'
+import SummaryPage from './Pages/SummaryPage';
+
 function App() {
   const {setUser,setIsAuthenticated,setLoading}=useContext(Context)
   useEffect(()=>{
@@ -40,15 +51,26 @@ function App() {
         <Routes>
           <Route path='/' element={<Home/>} />
           <Route path='/home' element={<Home/>} />
-          <Route path='/login' element={<Login/>} />
-          <Route path='/register' element={<Register/>} />
+          <Route path='/login' element={<SignInForm/>} />
+          <Route path='/register' element={<RegistrationForm/>} />
           <Route path="/api/v1/password/reset/:token" element={<ResetPassword />} />
           <Route path="/paymentsuccess" element={<PaymentPage/>} />
           <Route path='/about' element={<About/>}/>
           <Route path='/contact' element={<ContactUs/>}/>           
           <Route path='/profile' element={<Profile/>}/>
-          <Route path="/services/services" element={<ServicesPage/>}/>
-          <Route path="/services/services/cleaning" element={<Cleaning/>}/>          
+          <Route path="/services/All services" element={<ServicesPage/>}/>
+          <Route path='/location' element={<CitySelection/>}/>
+          <Route path='/membershipDetails' element={<MemberShipDetails/>}/>
+          <Route path='/WorkShiftAndDate' element={<WorkShiftAndDate/>}/>
+          <Route path="/Services/:title" element={<ServicesDescription />}></Route>
+          <Route path='/CitySelection'  element={<CitySelection />}></Route>
+          <Route path='/ServiceSelection' element={<ServiceSelection />}></Route>
+          <Route path='/DetailsRegBooking' element= {<DetailsRegardingBooking/>} ></Route>
+          <Route path='/summary' element= {<SummaryPage/>} ></Route>
+
+          <Route path='/Admin' element= {<Admin/>} ></Route>
+          
+
         </Routes>
         <Footer/>
         <Toaster/>

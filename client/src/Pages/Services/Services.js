@@ -1,8 +1,13 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-
+import { useNavigate } from "react-router-dom";
+import {useDispatch} from 'react-redux';
+import { addTitle } from '../../Redux/cookUserInfoSlice';
 const ServicesCard = ({ title, imageUrl }) => {
+  //const [serviceInfo,setServiceInfo]=useState({});
+  const history = useNavigate();
+  const dispatch=useDispatch();
   const cardStyles = {
     maxWidth: 300,
     width: '100%',
@@ -44,15 +49,22 @@ const ServicesCard = ({ title, imageUrl }) => {
     bottom: '0',
     left: '0',
     margin: '8px',
-    backgroundColor: 'black', // Background color of the button
-    color: '#fff', // Text color of the button
+    backgroundColor: 'black',
+    color: '#fff', 
   };
-
+  const handleBookNow = () => {
+    console.log('Button clicked. Storing title in session. Title:', title);
+    sessionStorage.setItem('selectedServiceTitle', title);
+    localStorage.setItem('serviceInfo', JSON.stringify([{title}]));
+    dispatch(addTitle(title));
+    history(`/Services/${encodeURIComponent(title)}`);
+  };
+  
   return (
     <Paper style={cardStyles}>
       <img src={imageUrl} alt="" style={imageStyles} />
       <div style={titleStyles}>{title}</div>
-      <Button variant="contained" style={buttonStyles}>
+      <Button variant="contained" style={buttonStyles} onClick={handleBookNow}>
         Book Now
       </Button>
     </Paper>

@@ -5,7 +5,6 @@ import cors from 'cors';
 import {errorMiddleware} from './middleware/error.js';
 import user from './routes/userRoutes.js';
 import userContact from './routes/contactRoutes.js';
-import paymentDetailsRoutes from './routes/paymentDetailsRoutes.js'
 import cookieParser from 'cookie-parser';
 import paymentRoutes from './routes/paymentRoutes.js'
 config({path:"./configuration/config.env"});
@@ -19,9 +18,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use("/api/v1", user);
-
 app.use("/api/v1", userContact);
-app.use("/api/v1", paymentDetailsRoutes);
 app.use('/api/v1',paymentRoutes);
 app.get("/getKey",(req,res)=>{
     res.status(200).json({

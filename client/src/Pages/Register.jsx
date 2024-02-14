@@ -1,264 +1,209 @@
-import React, { useContext, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 
+import React, { useContext, useState } from 'react';
+import { Navigate, Link} from 'react-router-dom';
 import axios from 'axios';
 import {
   TextField,
   Button,
   Container,
-  Paper,
   Typography,
-  Avatar,
   CssBaseline,
   FormControl,
-  FormLabel,
   RadioGroup,
   FormControlLabel,
   Radio,
-  Divider,
+  Box,
+  Grid,InputLabel,Select,MenuItem
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link } from 'react-router-dom';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+
 import { Context } from '../index';
 import toast from 'react-hot-toast';
+import HouseHoldImage from '../Images/RegistrationImg.png';
 
-const Register = () => {
-  const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
-
-  const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: '',
-    role: 'User',
-    dob: '',
-    gender: 'Male',
-    mobileNumber: '',
-  });
-
-  const handleFormChange = async(e) => {
-    const { name, value } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
-
-  const [hover, setOnhover] = useState(false);
-
-  const handleRegistration = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-
-    try {
-      const { data } = await axios.post('http://localhost:4000/api/v1/register', form,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
-      console.log(data);
-      toast.success("You have registered successfully...");
-      setIsAuthenticated(true);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response.data.message);
-      setIsAuthenticated(false);
-      setLoading(false);
-
-    }
-  };
-
-  const hoverEffect = () => {
-    setOnhover(true);
-  };
-
-  const discardHoverEffect = () => {
-    setOnhover(false);
-  };
-
-  const textStyle = {
-    fontWeight: '900',
-    color: hover ? '#f57c00' : '#ffa726',
-    transition: 'all 0.5s ease-in-out',
-  };
- if(isAuthenticated) return <Navigate to={"/"} />
+const RegistrationForm = () => {
+    const {isAuthenticated,setIsAuthenticated,loading,setLoading}=useContext(Context);
+    const [hover, setOnhover] = useState(false);
+    const hoverEffect = () => {
+      setOnhover(true);
+    };
+  
+    const discardHoverEffect = () => {
+      setOnhover(false);
+    };
+  
+    const textStyle = {
+      fontWeight: '900',
+      color: hover ? '#f57c00' : '#ffa726',
+      transition: 'all 0.5s ease-in-out',
+    };
+    const [form, setForm] = useState({
+      username: '',
+      email: '',
+      password: '',
+      role: 'user',
+      dob: '',
+      gender: 'Male',
+      mobileNumber: '',
+    });
+  
+    const handleFormChange = async(e) => {
+      const { name, value } = e.target;
+      setForm((prevForm) => ({
+        ...prevForm,
+        [name]: value,
+      }));
+    };
+   
+   const handleRegistration = async (e) => {
+      setLoading(true);
+      e.preventDefault();
+  
+      try {
+        const { data } = await axios.post('http://localhost:4000/api/v1/register', form,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        console.log(data);
+        toast.success("You have registered successfully...");
+        setIsAuthenticated(true);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response.data.message);
+        setIsAuthenticated(false);
+        setLoading(false);
+  
+      }
+    };
+  
+    if(isAuthenticated) return <Navigate to={"/"} />
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Paper
-        elevation={3}
+    <Container component="main" maxWidth="lg" sx={{ width: '80%' }}>
+         <CssBaseline />  
+      <Box
         sx={{
-          padding: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: 'rgb(255, 251, 245)',
+          justifyContent: 'center',
+          backgroundColor: '#F7EFE5',
+          borderRadius: '2px',
+          margin: '2rem',
+          padding: '2rem',
         }}
       >
-        <Avatar
-          sx={{
-            margin: 1,
-            backgroundColor: (theme) => theme.palette.warning.main,
-          }}
-        >
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Create your account
-        </Typography>
-        <form
-          sx={{
-            width: '100%',
-            marginTop: 3,
-          }}
-          onSubmit={handleRegistration}
-        >
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Username"
-            type="text"
-            name="username"
-            value={form.username}
-            onChange={handleFormChange}
-            required
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Email Address"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleFormChange}
-            required
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleFormChange}
-            required
-          />
-          <FormControl
-            component="fieldset"
-            sx={{
-              marginTop: 2,
-            }}
-          >
-            <FormLabel component="legend">Role</FormLabel>
-            <RadioGroup
-              row
-              aria-label="role"
-              name="role"
-              value={form.role}
-              onChange={handleFormChange}
-            >
-              <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
-              <FormControlLabel value="User" control={<Radio />} label="User"/>
-              <FormControlLabel value="Employee" control={<Radio />} label="Employee" />
-            </RadioGroup>
-          </FormControl>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Date of Birth"
-            type="date"
-            name="dob"
-            value={form.dob}
-            onChange={handleFormChange}
-            required
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Mobile Number"
-            type="text"
-            name="mobileNumber"
-            value={form.mobileNumber}
-            onChange={handleFormChange}
-            required
-          />
-          <FormControl
-            component="fieldset"
-            sx={{
-              marginTop: 2,
-            }}
-          >
-            <FormLabel component="legend">Gender</FormLabel>
-            <RadioGroup
-              row
-              aria-label="gender"
-              name="gender"
-              value={form.gender}
-              onChange={handleFormChange}
-            >
-              <FormControlLabel value="Male" control={<Radio />} label="Male" />
-              <FormControlLabel
-                value="Female"
-                control={<Radio />}
-                label="Female"
-              />
-            </RadioGroup>
-          </FormControl>
-
-          <Button
-            fullWidth
-            variant="contained"
-            color="warning"
-            type="submit"
-            sx={{
-              marginY: 3,
-              backgroundColor: (theme) => theme.palette.warning.main,
-              transition: 'all 0.5s ease-in-out',
-            }}
-            disabled={loading}
-          >
-            Sign In
-          </Button>
-          <Typography sx={{ textAlign: 'center' }} variant="h4">
-            Or
-          </Typography>
-          <Typography
-            sx={{ paddingY: 2, textAlign: 'center', fontWeight: 600 }}
-          >
-            Already have an account? &nbsp;&nbsp;
-            <Link
-              to={'/login'}
-              style={textStyle}
-              onMouseOver={hoverEffect}
-              onMouseOut={discardHoverEffect}
-            >
-              Log In
-            </Link>
-          </Typography>
-        </form>
-        <Divider sx={{ width: '100%', marginY: 2 }} />
-        <GoogleOAuthProvider clientId="your-google-client-id">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-            }}
-            onError={() => {
-              console.log('Login Failed');
-            }}
-          />
-          ;
-        </GoogleOAuthProvider>
-      </Paper>
+        <Grid container spacing={2}>
+          {/* Left Section (60%) */}
+          <Grid item xs={8}>
+            <img
+              src={HouseHoldImage}
+              alt="House hold"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2px' }}
+            />
+          </Grid>
+          
+          {/* Right Section (40%) */}
+          <Grid item xs={4}>
+            <Box sx={{ p: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Typography component="h1" variant="h5" fontWeight={"bold"} sx={{ marginBottom: 2 }}>
+                Registration
+              </Typography>
+              <form onSubmit={handleRegistration}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  name="username"
+                  required
+                  type="text"
+                  variant="outlined"
+                  value={form.username}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <TextField
+                  fullWidth
+                  type="email"
+                  label="Email"
+                  name="email"
+                  required
+                  variant="outlined"
+                  value={form.email}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <TextField
+                  fullWidth
+                  type="password"
+                  label="Password"
+                  name="password"
+                  required
+                  variant="outlined"
+                  value={form.password}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <FormControl fullWidth variant="outlined" sx={{ marginBottom: 1.5 }}>
+                  <InputLabel>Role</InputLabel>
+                  <Select name="role" label="Role" onChange={handleFormChange}>
+                    <MenuItem value="user">User</MenuItem>
+                    <MenuItem value="admin">Admin</MenuItem>
+                  </Select>
+                </FormControl>
+                <RadioGroup
+                  row
+                  aria-label="gender"
+                  name="gender"
+                  defaultValue="Male"
+                  sx={{ marginBottom: 1.5 }}
+                >
+                  <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                  <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                  <FormControlLabel value="Other" control={<Radio />} label="Other" />
+                </RadioGroup>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="DOB"
+                  name="dob"
+                  required
+                  variant="outlined"
+                  value={form.dob}
+                  onChange={handleFormChange}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ marginBottom: 1.5 }}
+                />                <TextField
+                  fullWidth
+                  label="Mobile Number"
+                  name="mobileNumber"
+                  required
+                  variant="outlined"
+                  value={form.mobileNumber}
+                  onChange={handleFormChange}
+                  sx={{ marginBottom: 1.5 }}
+                />
+                <Button type="submit" disabled={loading} fullWidth variant="contained" color="primary">
+                  Register
+                </Button>
+                <Typography variant="h6" align="center" margin={1}>
+                  Already have an account?{' '}
+                  <Link to={'/login'} 
+                  style={textStyle}
+                  onMouseOver={hoverEffect}
+                   onMouseOut={discardHoverEffect}>
+                    LogIn
+                  </Link>
+                </Typography>
+              </form>
+              
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     </Container>
   );
 };
 
-export default Register;
+export default RegistrationForm;
